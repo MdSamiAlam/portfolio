@@ -1,0 +1,63 @@
+# ==============================================================================
+# CI — Continuous Integration
+# Runs automatically on every push and every pull request. Its only job is
+# to catch problems (type errors, broken builds) before they land on main —
+# it does not deploy anything.
+# ==============================================================================
+name: CI
+
+# `on:` defines what triggers this workflow.
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  # Lets you trigger a run manually from the Actions tab in GitHub, useful
+  # for re-running CI without pushing an empty commit.
+  workflow_dispatch:
+
+jobs:
+  build-and-lint:
+    # The virtual machine this job runs on — a clean Ubuntu image GitHub
+    # spins up fresh for every run and destroys afterward.
+    runs-on: ubuntu-latest
+
+    steps:
+      # Clones your repo into the runner's workspace. Without this step
+      # there's no code to build.
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # Installs Node.js on the runner and enables npm's built-in cache
+      # (keyed on package-lock.json) so `npm ci` doesn't redownload every
+      # dependency from scratch on every run.
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+
+      # Same command your Dockerfile uses — installs exactly what's pinned
+      # in package-lock.json, no surprises.
+      - name: Install dependencies
+        run: npm ci
+
+      # Runs oxlint (configured in package.json's "lint" script). Catches
+      # unused variables, obvious bugs, etc.
+      - name: Lint
+        run: npm run lint
+
+      # `tsc -b && vite build` — the same build command that runs locally
+      # and inside the Docker image. If this fails, the PR should not merge.
+      - name: Type-check and build
+        run: npm run build
+
+      # Uploads the dist/ folder as a downloadable artifact on the workflow
+      # run's summary page — handy for eyeballing a build without pulling
+      # the branch locally. Kept for 7 days, then auto-deleted.
+      - name: Upload build output
+        uses: actions/upload-artifact@v4
+        with:
+          name: dist
+          path: dist/
+          retention-days: 7

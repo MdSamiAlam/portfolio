@@ -1,0 +1,157 @@
+@import url("https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap");
+@import "tailwindcss";
+
+/* ==========================================================================
+   DESIGN TOKENS — Dark Luxury Theme
+   ========================================================================== */
+@theme {
+  /* Typography */
+  --font-display: "Space Grotesk", "General Sans", sans-serif;
+  --font-body: "Inter", "General Sans", sans-serif;
+  --font-mono: "JetBrains Mono", "IBM Plex Mono", monospace;
+
+  /* Core palette */
+  --color-void: #05050a;          /* base background, near-black with blue tint */
+  --color-surface: #0b0b14;       /* card / panel base before glass */
+  --color-surface-2: #12121f;     /* elevated surface */
+  --color-border: #22222e;        /* hairline borders */
+  --color-ink: #f4f4f7;           /* primary text, soft off-white */
+  --color-ink-dim: #9a9aab;       /* secondary text */
+  --color-ink-faint: #5c5c6e;     /* tertiary / meta text */
+
+  /* Accent system */
+  --color-indigo: #5b4fe8;
+  --color-violet: #8b5cf6;
+  --color-electric: #2f7bff;
+  --color-electric-2: #4fc3ff;
+
+  /* Semantic */
+  --color-success: #34d399;
+  --color-warning: #fbbf24;
+
+  --radius-card: 1.25rem;
+  --radius-pill: 999px;
+
+  --ease-premium: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@layer base {
+  * {
+    border-color: var(--color-border);
+  }
+
+  html {
+    scroll-behavior: smooth;
+    background-color: var(--color-void);
+  }
+
+  body {
+    background-color: var(--color-void);
+    color: var(--color-ink);
+    font-family: var(--font-body);
+    -webkit-font-smoothing: antialiased;
+    overflow-x: hidden;
+  }
+
+  ::selection {
+    background: var(--color-indigo);
+    color: white;
+  }
+
+  @media (pointer: fine) {
+    body {
+      cursor: none;
+    }
+    a, button {
+      cursor: none;
+    }
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--color-electric-2);
+    outline-offset: 3px;
+    border-radius: 4px;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
+}
+
+@layer components {
+  .glass {
+    background: linear-gradient(180deg, rgba(255,255,255,0.06), rgba(255,255,255,0.02));
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(255,255,255,0.08);
+  }
+
+  /* Same look, no backdrop-filter — for grids with many repeated instances
+     (skill badges, orbiting chips) where per-element blur compositing adds
+     up and causes scroll jank. */
+  .glass-flat {
+    background: rgba(255,255,255,0.045);
+    border: 1px solid rgba(255,255,255,0.08);
+  }
+
+  .text-gradient {
+    background: linear-gradient(120deg, var(--color-electric-2), var(--color-indigo) 45%, var(--color-violet) 90%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+
+  .glow-border {
+    position: relative;
+  }
+  .glow-border::before {
+    content: "";
+    position: absolute;
+    inset: -1px;
+    border-radius: inherit;
+    padding: 1px;
+    background: linear-gradient(135deg, var(--color-electric-2), transparent 40%, var(--color-violet));
+    -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    opacity: 0;
+    transition: opacity 0.4s var(--ease-premium);
+    pointer-events: none;
+  }
+  .glow-border:hover::before {
+    opacity: 1;
+  }
+
+  /* Compositor-only spins — used instead of Framer Motion's rAF-driven
+     rotate for anything that spins forever, since CSS animations don't
+     tax the main thread the way a JS tick per frame does. */
+  .animate-spin-slow {
+    animation: spin 40s linear infinite;
+    will-change: transform;
+  }
+  .animate-spin-slow-reverse {
+    animation: spin-reverse 40s linear infinite;
+    will-change: transform;
+  }
+  .animate-spin-fast {
+    animation: spin 8s linear infinite;
+    will-change: transform;
+  }
+  .will-change-transform {
+    will-change: transform;
+  }
+
+  @keyframes spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+  }
+  @keyframes spin-reverse {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(-360deg); }
+  }
+}

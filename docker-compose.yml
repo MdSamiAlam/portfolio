@@ -1,0 +1,27 @@
+# Docker Compose describes *how to run* one or more containers together —
+# here there's just one service, but Compose is still useful because it
+# turns a long `docker run` command with flags into a single `docker compose up`.
+services:
+  portfolio:
+    # `build: .` tells Compose to build an image from the Dockerfile in this
+    # directory, rather than pulling a pre-built image from a registry.
+    build:
+      context: .
+      dockerfile: Dockerfile
+
+    # Names the built image so `docker images` shows something readable
+    # instead of an auto-generated hash-based name.
+    image: md-sami-portfolio:latest
+
+    container_name: portfolio
+
+    # Maps host_port:container_port. Nginx inside the container listens on
+    # 80 (see nginx.conf); this exposes it on http://localhost:8080 on your
+    # machine. Change the left-hand number if 8080 is already taken locally.
+    ports:
+      - "8080:80"
+
+    # Restarts the container automatically if it crashes or the Docker
+    # daemon restarts — `unless-stopped` means it won't restart if you
+    # deliberately stopped it yourself.
+    restart: unless-stopped
