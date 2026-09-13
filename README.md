@@ -4,7 +4,7 @@ A dark-luxury, motion-forward developer portfolio built with React, TypeScript,
 Tailwind CSS v4, and Framer Motion — showcasing Data Science, Machine
 Learning, and Generative AI projects.
 
-**Live site:** https://portfolio-grglhuatn-md-sami-alam1.vercel.app
+**Live site:** https://portfolio-md-sami-alam1.vercel.app
 
 ---
 
