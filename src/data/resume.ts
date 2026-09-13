@@ -18,7 +18,7 @@ export const personal = {
     github: "https://github.com/MdSamiAlam",
     linkedin: "https://linkedin.com/in/mdsamialam",
   },
-  photo: null, // no photo supplied in resume — placeholder monogram used until provided
+  photo: "/profile.jpg",
 } as const;
 
 export type SkillCategory =
